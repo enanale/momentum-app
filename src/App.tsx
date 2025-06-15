@@ -1,6 +1,12 @@
 import { AppBar, Avatar, Box, Button, CircularProgress, CssBaseline, IconButton, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
+import { StuckButton } from './components/StuckButton';
+import { VoidForm } from './components/VoidForm';
+import type { VoidEntry } from './types/void';
 import styles from './styles/App.module.css';
 import { Google as GoogleIcon, Logout as LogoutIcon } from '@mui/icons-material';
+import { useState } from 'react';
+import { createVoidEntry } from './services/voidService';
+import { DailyOperatingDoc } from './components/DailyOperatingDoc';
 import { useAuth } from './hooks/useAuth';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -22,6 +28,8 @@ const theme = createTheme({
 
 function App() {
   const { user, loading, signInWithGoogle, signOutUser } = useAuth();
+  const [isVoidFormOpen, setIsVoidFormOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,10 +87,34 @@ function App() {
           <Typography variant="h2" component="h1" gutterBottom align="center" className={styles.heading}>
             Hello, {user ? user.displayName?.split(' ')[0] || 'there' : 'World'}!
           </Typography>
-          <Typography variant="body1" align="center" className={styles.subText}>
-            Welcome to Momentum{user ? ' - Your Personal Dashboard' : ' - Your New Web App'}
-          </Typography>
+          {user ? (
+            <DailyOperatingDoc userId={user.uid} refreshTrigger={refreshTrigger} />
+          ) : (
+            <Typography variant="h4" component="h1" gutterBottom>
+              Welcome to Momentum - Your New Web App
+            </Typography>
+          )}
         </Box>
+        {user && (
+          <>
+            <StuckButton onClick={() => setIsVoidFormOpen(true)} />
+            <VoidForm
+              open={isVoidFormOpen}
+              onClose={() => setIsVoidFormOpen(false)}
+              onSubmit={async (voidEntry: Partial<VoidEntry>) => {
+                if (!user?.uid) return;
+                try {
+                  await createVoidEntry(user.uid, voidEntry);
+                  setIsVoidFormOpen(false);
+                  setRefreshTrigger(prev => prev + 1); // Trigger refresh
+                } catch (error) {
+                  console.error('Error creating void entry:', error);
+                  // TODO: Add error handling/notification
+                }
+              }}
+            />
+          </>
+        )}
       </Box>
     </ThemeProvider>
   );
