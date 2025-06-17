@@ -15,16 +15,59 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 const theme = createTheme({
+  palette: {
+    primary: {
+      main: 'rgba(89, 58, 85, 0.95)', // sunset purple
+      light: 'rgba(89, 58, 85, 0.8)',
+      dark: 'rgba(67, 35, 55, 0.95)',
+      contrastText: '#fff',
+    },
+    background: {
+      default: '#fff',
+      paper: 'rgba(255, 255, 255, 0.92)',
+    },
+    text: {
+      primary: 'rgba(0, 0, 0, 0.75)',
+      secondary: 'rgba(89, 58, 85, 0.8)',
+    },
+  },
   components: {
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(135deg, #2C5364 0%, #203A43 50%, #0F2027 100%)',
-          boxShadow: '0 3px 5px 2px rgba(15, 32, 39, 0.3)'
+          background: 'linear-gradient(135deg, rgba(89, 58, 85, 0.85) 0%, rgba(82, 45, 70, 0.9) 50%, rgba(67, 35, 55, 0.95) 100%)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 3px 15px rgba(0, 0, 0, 0.15)'
         }
       }
-    }
-  }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backdropFilter: 'blur(10px)',
+          borderRadius: 16,
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backdropFilter: 'blur(10px)',
+          borderRadius: 16,
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+        },
+      },
+    },
+  },
 });
 
 function App() {
@@ -93,7 +136,12 @@ function App() {
           {user ? (
             <DailyOperatingDoc userId={user.uid} refreshTrigger={refreshTrigger} />
           ) : (
-            <Typography variant="h4" component="h1" gutterBottom>
+            <Typography 
+              variant="h4" 
+              component="h1" 
+              gutterBottom
+              className={styles.subText}
+            >
               Welcome to Momentum - Your New Web App
             </Typography>
           )}

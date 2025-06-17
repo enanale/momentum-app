@@ -22,6 +22,28 @@ const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
+const StyledStepper = styled(Stepper)(({ theme }) => ({
+  '& .MuiStepLabel-label': {
+    color: theme.palette.text.primary,
+    '&.Mui-active': {
+      color: theme.palette.primary.main,
+      fontWeight: 500,
+    },
+    '&.Mui-completed': {
+      color: theme.palette.primary.light,
+    },
+  },
+  '& .MuiStepIcon-root': {
+    color: 'rgba(89, 58, 85, 0.3)',
+    '&.Mui-active': {
+      color: theme.palette.primary.main,
+    },
+    '&.Mui-completed': {
+      color: theme.palette.primary.light,
+    },
+  },
+}));
+
 const steps = ['Acknowledge', 'Define the Void', 'Next Action'];
 
 interface VoidFormProps {
@@ -55,11 +77,29 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
       case 0:
         return (
           <Box>
-            <Typography variant="body1" gutterBottom>
+            <Typography 
+              variant="body1" 
+              gutterBottom
+              sx={{ 
+                color: theme => theme.palette.text.primary,
+                lineHeight: 1.6,
+                fontSize: '1.1rem'
+              }}
+            >
               Take a moment to acknowledge that you're feeling stuck. This is a normal part of the process,
               and you're taking a positive step by addressing it.
             </Typography>
-            <Typography variant="body1" gutterBottom>
+            <Typography 
+              variant="body1" 
+              gutterBottom
+              sx={{ 
+                color: theme => theme.palette.primary.main,
+                fontWeight: 500,
+                fontSize: '1.1rem',
+                fontStyle: 'italic',
+                marginTop: 2
+              }}
+            >
               Remember: Clarity comes from action, not from endless planning.
             </Typography>
           </Box>
@@ -90,7 +130,15 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
       case 2:
         return (
           <FormContainer>
-            <Typography variant="body1" gutterBottom>
+            <Typography 
+              variant="body1" 
+              gutterBottom
+              sx={{ 
+                color: theme => theme.palette.text.primary,
+                lineHeight: 1.6,
+                fontSize: '1.1rem'
+              }}
+            >
               Great! You've identified "{formData.title}". Now, let's break it down into a small,
               concrete action you can take in the next 5-15 minutes.
             </Typography>
@@ -119,24 +167,63 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Let's Get Unstuck</DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="sm" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          backgroundImage: theme => `linear-gradient(135deg, ${theme.palette.background.paper}, rgba(255, 255, 255, 0.92))`,
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        color: theme => theme.palette.primary.main,
+        fontWeight: 500,
+        letterSpacing: '0.5px',
+        pb: 3
+      }}>
+        Let's Get Unstuck
+      </DialogTitle>
       <DialogContent>
         <Box sx={{ mt: 2, mb: 4 }}>
-          <Stepper activeStep={activeStep}>
+          <StyledStepper activeStep={activeStep}>
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}
-          </Stepper>
+          </StyledStepper>
           <Box sx={{ mt: 4 }}>{getStepContent(activeStep)}</Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        {activeStep > 0 && <Button onClick={handleBack}>Back</Button>}
-        <Button variant="contained" onClick={handleNext}>
+      <DialogActions sx={{ p: 3, gap: 1 }}>
+        <Button 
+          onClick={onClose}
+          color="primary"
+          variant="text"
+        >
+          Cancel
+        </Button>
+        {activeStep > 0 && (
+          <Button 
+            onClick={handleBack}
+            sx={{
+              color: 'rgba(89, 58, 85, 0.8)',
+              '&:hover': {
+                backgroundColor: 'rgba(89, 58, 85, 0.08)'
+              }
+            }}
+          >
+            Back
+          </Button>
+        )}
+        <Button 
+          variant="contained" 
+          onClick={handleNext}
+          color="primary"
+        >
           {activeStep === steps.length - 1 ? 'Start Action' : 'Next'}
         </Button>
       </DialogActions>
