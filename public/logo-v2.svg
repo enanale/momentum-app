@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base circle representing continuous momentum -->
+  <circle cx="256" cy="256" r="240" stroke="#1976D2" stroke-width="32" stroke-dasharray="12 8" opacity="0.2"/>
+  
+  <!-- Forward-moving arrow that breaks through paralysis -->
+  <path d="M128 256 L384 256 M384 256 L304 176 M384 256 L304 336" 
+        stroke="#1976D2" 
+        stroke-width="48" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Progress dots representing task completion -->
+  <circle cx="128" cy="256" r="24" fill="#1976D2"/>
+  <circle cx="256" cy="256" r="24" fill="#1976D2"/>
+  <circle cx="384" cy="256" r="24" fill="#1976D2"/>
+</svg>

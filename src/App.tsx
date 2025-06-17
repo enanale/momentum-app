@@ -1,4 +1,5 @@
 import { AppBar, Avatar, Box, Button, CircularProgress, CssBaseline, IconButton, ThemeProvider, Toolbar, Typography, createTheme } from '@mui/material';
+import { Logo } from './components/Logo';
 import { StuckButton } from './components/StuckButton';
 import { VoidForm } from './components/VoidForm';
 import type { VoidEntry } from './types/void';
@@ -37,17 +38,19 @@ function App() {
       <Box className={styles.pageContainer}>
         <AppBar position="fixed">
           <Toolbar>
-            <Typography 
-              variant="h6" 
-              component="div" 
-              sx={{ 
-                flexGrow: 1,
-                fontWeight: 500,
-                letterSpacing: '0.5px'
-              }}
-            >
-              Momentum
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, gap: 2 }}>
+              <Logo height={36} />
+              <Typography 
+                variant="h6" 
+                component="div" 
+                sx={{ 
+                  fontWeight: 500,
+                  letterSpacing: '0.5px'
+                }}
+              >
+                Momentum
+              </Typography>
+            </Box>
             {loading ? (
               <CircularProgress size={24} sx={{ color: 'white' }} />
             ) : user ? (
