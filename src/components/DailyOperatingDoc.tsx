@@ -6,14 +6,19 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  ListItemSecondaryAction,
   Checkbox,
   Typography,
   Paper,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  Collapse
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import type { NextAction } from '../types/void';
-import { getTodaysNextActions, completeNextAction } from '../services/voidService';
+import { getTodaysNextActions, completeNextAction, uncompleteNextAction } from '../services/voidService';
+import TimerIcon from '@mui/icons-material/Timer';
+import { FocusTimer } from './FocusTimer';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -32,6 +37,7 @@ interface DailyOperatingDocProps {
 export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperatingDocProps) => {
   const [actions, setActions] = useState<NextAction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchActions = async () => {
@@ -51,16 +57,30 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
 
   const handleToggle = async (actionId: string) => {
     try {
-      await completeNextAction(actionId);
-      setActions(prevActions =>
-        prevActions.map(action =>
-          action.id === actionId
-            ? { ...action, completed: true, completedAt: new Date() }
-            : action
-        )
-      );
+      const action = actions.find(a => a.id === actionId);
+      if (!action) return;
+
+      if (action.completed) {
+        await uncompleteNextAction(actionId);
+        setActions(prevActions =>
+          prevActions.map(a =>
+            a.id === actionId
+              ? { ...a, completed: false, completedAt: undefined }
+              : a
+          )
+        );
+      } else {
+        await completeNextAction(actionId);
+        setActions(prevActions =>
+          prevActions.map(a =>
+            a.id === actionId
+              ? { ...a, completed: true, completedAt: new Date() }
+              : a
+          )
+        );
+      }
     } catch (error) {
-      console.error('Error completing action:', error);
+      console.error('Error toggling action completion:', error);
       // TODO: Add error handling/notification
     }
   };
@@ -89,18 +109,23 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
               key={action.id}
               disablePadding
               secondaryAction={
-                <Typography variant="caption" color="text.secondary">
-                  {action.estimatedMinutes} min
-                </Typography>
+                <IconButton 
+                  edge="end" 
+                  onClick={() => setFocusedActionId(focusedActionId === action.id ? null : action.id)}
+                  disabled={action.completed}
+                >
+                  <TimerIcon />
+                </IconButton>
               }
             >
-              <ListItemButton onClick={() => handleToggle(action.id)} dense>
+              <ListItemButton role={undefined} dense>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
                     checked={action.completed}
                     tabIndex={-1}
                     disableRipple
+                    onClick={() => handleToggle(action.id)}
                   />
                 </ListItemIcon>
                 <ListItemText
@@ -110,7 +135,27 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
                     color: action.completed ? 'text.secondary' : 'text.primary',
                   }}
                 />
+                <ListItemSecondaryAction>
+                  <IconButton 
+                    edge="end" 
+                    onClick={() => setFocusedActionId(focusedActionId === action.id ? null : action.id)}
+                    disabled={action.completed}
+                  >
+                    <TimerIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
               </ListItemButton>
+              <Collapse in={focusedActionId === action.id} timeout="auto" unmountOnExit>
+                <Box sx={{ pl: 4, pr: 4, pb: 2 }}>
+                  <FocusTimer 
+                    action={action}
+                    onComplete={() => {
+                      setFocusedActionId(null);
+                      handleToggle(action.id);
+                    }}
+                  />
+                </Box>
+              </Collapse>
             </ListItem>
           ))}
         </List>

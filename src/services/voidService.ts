@@ -50,3 +50,11 @@ export const completeNextAction = async (actionId: string): Promise<void> => {
     completedAt: serverTimestamp()
   });
 };
+
+export const uncompleteNextAction = async (actionId: string): Promise<void> => {
+  const actionRef = doc(db, NEXT_ACTIONS_COLLECTION, actionId);
+  await updateDoc(actionRef, {
+    completed: false,
+    completedAt: null
+  });
+};
