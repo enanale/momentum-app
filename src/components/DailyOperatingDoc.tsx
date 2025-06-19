@@ -143,29 +143,29 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
         </Typography>
       ) : (
         <List>
-          {actions.map((action) => (
-            <StyledListItem
-              key={action.id}
-              disablePadding
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  onClick={() => setFocusedActionId(focusedActionId === action.id ? null : action.id)}
-                  disabled={action.completed}
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    },
-                    '&.Mui-disabled': {
-                      color: 'rgba(255, 255, 255, 0.3)',
-                    },
-                  }}
-                >
-                  <TimerIcon />
-                </IconButton>
-              }
-            >
+          {actions.map((action) => {
+            const isTimerFocused = focusedActionId === action.id;
+
+            const timerButton = !isTimerFocused ? (
+              <IconButton
+                edge="end"
+                onClick={() => setFocusedActionId(action.id)}
+                disabled={action.completed}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                  '&.Mui-disabled': {
+                    color: 'rgba(255, 255, 255, 0.3)',
+                  },
+                }}
+              >
+                <TimerIcon />
+              </IconButton>
+            ) : null;
+
+            const listItemContent = !isTimerFocused ? (
               <StyledListItemButton role={undefined} dense>
                 <StyledListItemIcon>
                   <Checkbox
@@ -194,23 +194,35 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
                   }}
                 />
               </StyledListItemButton>
-              <Collapse in={focusedActionId === action.id} timeout="auto" unmountOnExit>
-                <Box sx={{ pl: 4, pr: 4, pb: 2 }}>
-                  {focusedActionId && (
-                    <Suspense fallback={<Box sx={{ textAlign: 'center', p: 2 }}>Loading timer...</Box>}>
-                      <FocusTimer
-                        action={actions.find(a => a.id === focusedActionId)!}
-                        onComplete={() => {
-                          handleToggle(focusedActionId);
-                          setFocusedActionId(null);
-                        }}
-                      />
-                    </Suspense>
-                  )}
-                </Box>
-              </Collapse>
-            </StyledListItem>
-          ))}
+            ) : null;
+
+            return (
+              <StyledListItem
+                key={action.id}
+                disablePadding
+                secondaryAction={timerButton}
+              >
+                {listItemContent}
+                <Collapse in={isTimerFocused} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+                  <Box sx={{ display: 'flex', flexGrow: 1, pl: 4, pr: 4, pb: 2, width: '100%' }}>
+                    {/* Ensure FocusTimer only renders if this action is focused */}
+                    {isTimerFocused && (
+                      <Suspense fallback={<Box sx={{ textAlign: 'center', p: 2 }}>Loading timer...</Box>}>
+                        <FocusTimer
+                          action={action} // Pass the current action directly
+                          onComplete={() => {
+                            handleToggle(action.id);
+                            setFocusedActionId(null);
+                          }}
+                          onClose={() => setFocusedActionId(null)} // Add onClose handler
+                        />
+                      </Suspense>
+                    )}
+                  </Box>
+                </Collapse>
+              </StyledListItem>
+            );
+          })}
         </List>
       )}
     </StyledPaper>

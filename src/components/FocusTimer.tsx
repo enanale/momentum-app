@@ -12,12 +12,14 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
 import type { NextAction } from '../types/void';
 import { completeNextAction } from '../services/voidService';
 
 interface FocusTimerProps {
   action: NextAction;
   onComplete: () => void;
+  onClose: () => void;
   defaultMinutes?: number;
 }
 
@@ -41,9 +43,9 @@ const commonIconStyles = (theme: Theme, isComplete: boolean) => ({
 });
 
 const TimerCard = styled(Card)(({ theme }) => ({
-  maxWidth: 600,
-  width: '100%',
-  margin: theme.spacing(2),
+  position: 'relative',
+  width: '100%', // Ensure it takes full available width
+  margin: theme.spacing(0, 0, 2, 0), // Remove horizontal margins, keep bottom margin
   backgroundColor: theme.palette.background.paper,
   overflow: 'hidden',
 }));
@@ -72,7 +74,7 @@ const ActionTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-export default function FocusTimer({ action, onComplete, defaultMinutes = 10 }: FocusTimerProps) {
+export default function FocusTimer({ action, onComplete, onClose, defaultMinutes = 10 }: FocusTimerProps) {
   const [timeLeft, setTimeLeft] = useState(defaultMinutes * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -119,6 +121,21 @@ export default function FocusTimer({ action, onComplete, defaultMinutes = 10 }: 
 
   return (
     <TimerCard elevation={3}>
+      <IconButton
+        aria-label="close timer"
+        onClick={onClose}
+        sx={{
+          position: 'absolute',
+          top: theme => theme.spacing(1),
+          right: theme => theme.spacing(1),
+          color: 'rgba(255, 255, 255, 0.7)',
+          '&:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          }
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
       <CardContent>
         <ActionTitle variant="h6" gutterBottom>
           Current Focus:
