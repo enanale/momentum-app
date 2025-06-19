@@ -7,6 +7,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -19,6 +20,25 @@ interface FocusTimerProps {
   onComplete: () => void;
   defaultMinutes?: number;
 }
+
+// Common styles used across multiple elements
+const commonIconButtonStyles = (theme: Theme, isComplete: boolean) => ({
+  backgroundColor: isComplete 
+    ? alpha(theme.palette.primary.main, 0.1)
+    : alpha(theme.palette.primary.main, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.25)
+  },
+  '&:disabled': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.05)
+  }
+});
+
+const commonIconStyles = (theme: Theme, isComplete: boolean) => ({
+  color: isComplete 
+    ? alpha(theme.palette.primary.main, 0.4)
+    : theme.palette.primary.main
+});
 
 const TimerCard = styled(Card)(({ theme }) => ({
   maxWidth: 600,
@@ -52,7 +72,7 @@ const ActionTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-export const FocusTimer = ({ action, onComplete, defaultMinutes = 10 }: FocusTimerProps) => {
+export default function FocusTimer({ action, onComplete, defaultMinutes = 10 }: FocusTimerProps) {
   const [timeLeft, setTimeLeft] = useState(defaultMinutes * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -121,75 +141,29 @@ export const FocusTimer = ({ action, onComplete, defaultMinutes = 10 }: FocusTim
             size="large"
             onClick={toggleTimer}
             disabled={isComplete}
-            sx={theme => ({
-              backgroundColor: isComplete 
-                ? alpha(theme.palette.primary.main, 0.1)
-                : alpha(theme.palette.primary.main, 0.15),
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.25)
-              },
-              '&:disabled': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.05)
-              }
-            })}
+            sx={(theme: Theme) => commonIconButtonStyles(theme, isComplete)}
           >
             {isRunning ? (
-              <PauseIcon sx={theme => ({ 
-                color: isComplete 
-                  ? alpha(theme.palette.primary.main, 0.4)
-                  : theme.palette.primary.main
-              })} />
+              <PauseIcon sx={(theme: Theme) => commonIconStyles(theme, isComplete)} />
             ) : (
-              <PlayArrowIcon sx={theme => ({ 
-                color: isComplete 
-                  ? alpha(theme.palette.primary.main, 0.4)
-                  : theme.palette.primary.main
-              })} />
+              <PlayArrowIcon sx={(theme: Theme) => commonIconStyles(theme, isComplete)} />
             )}
           </IconButton>
           <IconButton
             size="large"
             onClick={resetTimer}
             disabled={isComplete}
-            sx={theme => ({
-              backgroundColor: isComplete 
-                ? alpha(theme.palette.primary.main, 0.1)
-                : alpha(theme.palette.primary.main, 0.15),
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.25)
-              },
-              '&:disabled': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.05)
-              }
-            })}
+            sx={(theme: Theme) => commonIconButtonStyles(theme, isComplete)}
           >
-            <RestartAltIcon sx={theme => ({ 
-              color: isComplete 
-                ? alpha(theme.palette.primary.main, 0.4)
-                : theme.palette.primary.main
-            })} />
+            <RestartAltIcon sx={(theme: Theme) => commonIconStyles(theme, isComplete)} />
           </IconButton>
           <IconButton
             size="large"
             onClick={handleComplete}
             disabled={isComplete}
-            sx={theme => ({
-              backgroundColor: isComplete 
-                ? alpha(theme.palette.primary.main, 0.1)
-                : alpha(theme.palette.primary.main, 0.15),
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.25)
-              },
-              '&:disabled': {
-                backgroundColor: alpha(theme.palette.primary.main, 0.05)
-              }
-            })}
+            sx={(theme: Theme) => commonIconButtonStyles(theme, isComplete)}
           >
-            <CheckCircleIcon sx={theme => ({ 
-              color: isComplete 
-                ? alpha(theme.palette.primary.main, 0.4)
-                : theme.palette.primary.main
-            })} />
+            <CheckCircleIcon sx={(theme: Theme) => commonIconStyles(theme, isComplete)} />
           </IconButton>
         </ButtonContainer>
         {timeLeft === 0 && (

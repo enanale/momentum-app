@@ -1,8 +1,13 @@
 import { Button } from '@mui/material';
 import PanToolIcon from '@mui/icons-material/PanTool';
 import { styled } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles';
 
-const StyledButton = styled(Button)(({ theme }) => ({
+const GRADIENT_START = '#FF6B6B';
+const GRADIENT_END = '#FF8E53';
+const SHADOW_COLOR = 'rgba(255, 105, 135, .3)';
+
+const StyledButton = styled(Button)(({ theme }: { theme: Theme }) => ({
   position: 'fixed',
   bottom: theme.spacing(4),
   right: theme.spacing(4),
@@ -10,10 +15,10 @@ const StyledButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(2, 4),
   fontSize: '1.2rem',
   textTransform: 'none',
-  background: 'linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)',
-  boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+  background: `linear-gradient(45deg, ${GRADIENT_START} 30%, ${GRADIENT_END} 90%)`,
+  boxShadow: `0 3px 5px 2px ${SHADOW_COLOR}`,
   '&:hover': {
-    background: 'linear-gradient(45deg, #FF8E53 30%, #FF6B6B 90%)',
+    background: `linear-gradient(45deg, ${GRADIENT_END} 30%, ${GRADIENT_START} 90%)`,
   },
 }));
 

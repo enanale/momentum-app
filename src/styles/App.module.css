@@ -8,7 +8,6 @@
   width: 100vw;
   box-sizing: border-box;
   position: relative;
-  /* min-height: calc(100vh - 64px); Subtract AppBar height */
   background-image: url('../assets/calm horizon.png');
   background-size: cover;
   background-position: center;
@@ -51,7 +50,7 @@
 }
 
 .heading {
-  color: rgba(10, 9, 32, 0.92);
+  color: rgb(213, 213, 255);
   font-weight: 600;
   letter-spacing: -0.025em;
   position: relative;
@@ -62,7 +61,7 @@
 }
 
 .subText {
-  color: rgba(89, 58, 85, 0.92);
+  color: rgba(252, 228, 249, 0.92);
   font-weight: 400;
   letter-spacing: -0.011em;
   line-height: 1.6;

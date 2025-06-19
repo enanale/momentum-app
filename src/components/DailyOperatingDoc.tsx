@@ -6,7 +6,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  ListItemSecondaryAction,
+
   Checkbox,
   Typography,
   Paper,
@@ -17,8 +17,10 @@ import {
 import { styled } from '@mui/material/styles';
 import type { NextAction } from '../types/void';
 import { getTodaysNextActions, completeNextAction, uncompleteNextAction } from '../services/voidService';
+import { serverTimestamp } from 'firebase/firestore';
 import TimerIcon from '@mui/icons-material/Timer';
-import { FocusTimer } from './FocusTimer';
+import { lazy, Suspense } from 'react';
+const FocusTimer = lazy(() => import('./FocusTimer'));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -46,22 +48,16 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   },
 }));
 
-const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
-  borderRadius: theme.spacing(1),
-}));
-
 const StyledListItemIcon = styled(ListItemIcon)(({ theme }) => ({
   minWidth: theme.spacing(5),
 }));
 
-const StyledListItemText = styled(ListItemText)(() => ({
-  '& .MuiTypography-root': {
-    fontWeight: 400,
-  },
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
+  borderRadius: theme.spacing(1),
 }));
 
-const StyledListItemSecondaryAction = styled(ListItemSecondaryAction)(({ theme }) => ({
-  right: theme.spacing(2),
+const StyledListItemText = styled(ListItemText)(() => ({
+  // No styles needed
 }));
 
 interface DailyOperatingDocProps {
@@ -109,7 +105,7 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
         setActions(prevActions =>
           prevActions.map(a =>
             a.id === actionId
-              ? { ...a, completed: true, completedAt: new Date() }
+              ? { ...a, completed: true, completedAt: serverTimestamp() }
               : a
           )
         );
@@ -152,10 +148,19 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
               key={action.id}
               disablePadding
               secondaryAction={
-                <IconButton 
-                  edge="end" 
+                <IconButton
+                  edge="end"
                   onClick={() => setFocusedActionId(focusedActionId === action.id ? null : action.id)}
                   disabled={action.completed}
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    '&.Mui-disabled': {
+                      color: 'rgba(255, 255, 255, 0.3)',
+                    },
+                  }}
                 >
                   <TimerIcon />
                 </IconButton>
@@ -169,6 +174,12 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
                     tabIndex={-1}
                     disableRipple
                     onClick={() => handleToggle(action.id)}
+                    sx={{
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      '&.Mui-checked': {
+                        color: 'rgba(176, 136, 174, 0.92)', // theme.palette.primary.light
+                      },
+                    }}
                   />
                 </StyledListItemIcon>
                 <StyledListItemText
@@ -179,28 +190,23 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
                     '& .MuiTypography-root': {
                       fontWeight: 400,
                       letterSpacing: '-0.011em',
-                    }
+                    },
                   }}
                 />
-                <StyledListItemSecondaryAction>
-                  <IconButton 
-                    edge="end" 
-                    onClick={() => setFocusedActionId(focusedActionId === action.id ? null : action.id)}
-                    disabled={action.completed}
-                  >
-                    <TimerIcon />
-                  </IconButton>
-                </StyledListItemSecondaryAction>
               </StyledListItemButton>
               <Collapse in={focusedActionId === action.id} timeout="auto" unmountOnExit>
                 <Box sx={{ pl: 4, pr: 4, pb: 2 }}>
-                  <FocusTimer 
-                    action={action}
-                    onComplete={() => {
-                      setFocusedActionId(null);
-                      handleToggle(action.id);
-                    }}
-                  />
+                  {focusedActionId && (
+                    <Suspense fallback={<Box sx={{ textAlign: 'center', p: 2 }}>Loading timer...</Box>}>
+                      <FocusTimer
+                        action={actions.find(a => a.id === focusedActionId)!}
+                        onComplete={() => {
+                          handleToggle(focusedActionId);
+                          setFocusedActionId(null);
+                        }}
+                      />
+                    </Suspense>
+                  )}
                 </Box>
               </Collapse>
             </StyledListItem>
