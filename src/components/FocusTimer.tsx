@@ -52,10 +52,10 @@ const TimerCard = styled(Card)(({ theme }) => ({
 
 const TimerDisplay = styled(Typography)(({ theme }) => ({
   fontSize: '4.5rem',
-  fontWeight: 300,
+  fontWeight: 600,
   textAlign: 'center',
   marginBottom: theme.spacing(3),
-  fontFamily: 'monospace',
+  fontFamily: '"Tomorrow", monospace', // Changed to Tomorrow font
   color: theme.palette.primary.main,
   textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
 }));
