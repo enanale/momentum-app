@@ -14,7 +14,7 @@ import {
   IconButton,
   Collapse
 } from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import type { NextAction } from '../types/void';
 import { getTodaysNextActions, completeNextAction, uncompleteNextAction } from '../services/voidService';
 import TimerIcon from '@mui/icons-material/Timer';
@@ -24,11 +24,12 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   maxWidth: 600,
   width: '100%',
-  backgroundColor: theme.palette.background.paper,
-  backdropFilter: 'blur(10px)',
+  backgroundColor: 'rgba(10, 9, 32, 0.6)',
+  backdropFilter: 'blur(20px) saturate(180%)',
   borderRadius: theme.spacing(2),
-  boxShadow: theme.shadows[4],
-  border: `1px solid ${alpha(theme.palette.common.white, 0.3)}`,
+  boxShadow: 'none',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  color: '#fff',
 }));
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
@@ -37,7 +38,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   '.MuiListItemButton-root': {
     borderRadius: theme.spacing(1),
     '&:hover': {
-      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
   },
   '&:last-child': {
@@ -132,16 +133,16 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
       <Typography 
         variant="h6" 
         gutterBottom 
-        sx={theme => ({
-          color: theme.palette.primary.main,
+        sx={{
+          color: '#fff',
           fontWeight: 500,
-          letterSpacing: '0.5px',
+          letterSpacing: '-0.025em',
           marginBottom: 3
-        })}>
+        }}>
         Today's Next Actions
       </Typography>
       {actions.length === 0 ? (
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ py: 4 }}>
+        <Typography variant="body1" align="center" sx={{ py: 4, color: 'rgba(255, 255, 255, 0.7)' }}>
           No actions planned for today. Click "I'm Stuck" to get started!
         </Typography>
       ) : (
@@ -174,7 +175,11 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperating
                   primary={action.description}
                   sx={{
                     textDecoration: action.completed ? 'line-through' : 'none',
-                    color: action.completed ? 'text.secondary' : 'text.primary',
+                    color: action.completed ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.9)',
+                    '& .MuiTypography-root': {
+                      fontWeight: 400,
+                      letterSpacing: '-0.011em',
+                    }
                   }}
                 />
                 <StyledListItemSecondaryAction>
