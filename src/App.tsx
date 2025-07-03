@@ -25,6 +25,7 @@ function App() {
   const { user, loading, error: authError, signInWithGoogle, signOutUser } = useAuth();
   const [isVoidFormOpen, setIsVoidFormOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isFocusTimerActive, setIsFocusTimerActive] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
 
   const handleError = useCallback((message: string, severity: ErrorState['severity'] = 'error') => {
@@ -151,7 +152,7 @@ function App() {
               Hello, {userFirstName}!
             </Typography>
             {user ? (
-              <DailyOperatingDoc userId={user.uid} refreshTrigger={refreshTrigger} />
+              <DailyOperatingDoc userId={user.uid} refreshTrigger={refreshTrigger} onTimerStateChange={setIsFocusTimerActive} />
             ) : (
               <Typography 
                 variant="h6" 
@@ -163,7 +164,7 @@ function App() {
               </Typography>
             )}
           </Box>
-          {user && (
+          {user && !isFocusTimerActive && (
             <>
               <StuckButton onClick={() => setIsVoidFormOpen(true)} />
               <VoidForm

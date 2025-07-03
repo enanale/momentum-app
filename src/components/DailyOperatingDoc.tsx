@@ -63,12 +63,17 @@ const StyledListItemText = styled(ListItemText)(() => ({
 interface DailyOperatingDocProps {
   userId: string;
   refreshTrigger?: number;
+  onTimerStateChange?: (isActive: boolean) => void;
 }
 
-export const DailyOperatingDoc = ({ userId, refreshTrigger = 0 }: DailyOperatingDocProps) => {
+export const DailyOperatingDoc = ({ userId, refreshTrigger = 0, onTimerStateChange }: DailyOperatingDocProps) => {
   const [actions, setActions] = useState<NextAction[]>([]);
   const [loading, setLoading] = useState(true);
   const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    onTimerStateChange?.(focusedActionId !== null);
+  }, [focusedActionId, onTimerStateChange]);
 
   useEffect(() => {
     const fetchActions = async () => {
