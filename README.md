@@ -1,6 +1,19 @@
 # Momentum App
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Firebase Hosting](https://img.shields.io/badge/deploy-Firebase-orange)](https://momentum-app-65c5d.web.app)
+
 A modern web application built with React, TypeScript, and Firebase, featuring a clean Material-UI interface with Google authentication and a responsive, calming design.
+
+## Screenshots
+
+| Landing Page | Daily Operating Doc |
+| :---: | :---: |
+| *Screenshot of the main landing page* | *Screenshot of the daily actions list* |
+
+| Focus Timer | I'm Stuck Form |
+| :---: | :---: |
+| *Screenshot of the focus timer in action* | *Screenshot of the 'I'm Stuck' input form* |
 
 ## Features
 
@@ -43,10 +56,13 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
 
 1. Clone the repository
 2. Install dependencies:
+
    ```bash
    npm install
    ```
+
 3. Create a `.env` file in the root directory with your Firebase configuration:
+
    ```env
    VITE_FIREBASE_API_KEY=your_api_key
    VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -60,6 +76,7 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
 ### Development
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -67,6 +84,7 @@ npm run dev
 ### Building for Production
 
 Build the app:
+
 ```bash
 npm run build
 ```
@@ -74,17 +92,18 @@ npm run build
 ### Deployment
 
 Deploy to Firebase Hosting:
+
 ```bash
 firebase deploy --only hosting
 ```
 
 ## Live Demo
 
-Visit the live application at: https://momentum-app-65c5d.web.app
+Visit the live application at: [https://momentum-app-65c5d.web.app](https://momentum-app-65c5d.web.app)
 
 ## Project Structure
 
-```
+```text
 momentum/
 ├── src/
 │   ├── hooks/
