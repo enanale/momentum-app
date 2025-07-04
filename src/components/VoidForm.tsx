@@ -10,10 +10,15 @@ import {
   Box,
   Stepper,
   Step,
-  StepLabel
+  StepLabel,
+  CircularProgress,
+  Chip
 } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { styled } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../firebase';
 import type { VoidFormData, NewNextAction } from '../types/void';
 
 const FormContainer = styled(Box)(({ theme }) => ({
@@ -56,6 +61,8 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
     title: '',
     description: '',
   });
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isSuggesting, setIsSuggesting] = useState(false);
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
@@ -68,6 +75,31 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
 
   const handleBack = () => {
     setActiveStep((prev) => prev - 1);
+  };
+
+  const handleSuggestAction = async () => {
+    if (!formData.title || !functions) {
+      console.error("Functions not available or no title provided.");
+      return;
+    }
+    setIsSuggesting(true);
+    setSuggestions([]);
+
+    const getSuggestions = httpsCallable<{ title: string; description?: string }, { suggestions: string[] }>(functions, 'getAiSuggestions');
+
+    try {
+      const result = await getSuggestions({ 
+        title: formData.title, 
+        description: formData.description 
+      });
+      setSuggestions(result.data.suggestions || []);
+    } catch (error) {
+      console.error("Error fetching AI suggestions:", error);
+      // Optionally, set an error state to show a message to the user
+      setSuggestions(['Could not get suggestions. Please try again.']);
+    } finally {
+      setIsSuggesting(false);
+    }
   };
 
   const getStepContent = (step: number) => {
@@ -157,6 +189,34 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
               }
               helperText="Make it specific and physical, e.g., 'Open Google Doc titled Project Plan'"
             />
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+              <Button 
+                onClick={handleSuggestAction} 
+                startIcon={isSuggesting ? <CircularProgress size={20} /> : <AutoAwesomeIcon />}
+                disabled={isSuggesting || !formData.title || !functions}
+                variant="outlined"
+              >
+                Suggest an Action
+              </Button>
+              {suggestions.length > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {suggestions.map((suggestion, index) => (
+                    <Chip 
+                      key={index} 
+                      label={suggestion} 
+                      onClick={() => setFormData({
+                        ...formData,
+                        nextAction: {
+                          description: suggestion,
+                          completed: false,
+                          estimatedMinutes: formData.nextAction?.estimatedMinutes,
+                        } satisfies NewNextAction,
+                      })}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
           </FormContainer>
         );
       default:
