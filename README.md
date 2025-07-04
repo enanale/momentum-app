@@ -55,6 +55,35 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
 - npm (v8 or higher)
 - Firebase CLI (`npm install -g firebase-tools`)
 
+### Firebase Project Setup
+
+Before you can run the application, you need to set up a Firebase project.
+
+1. **Create a Firebase Project**:
+    - Go to the [Firebase Console](https://console.firebase.google.com/).
+    - Click "Add project" and follow the on-screen instructions.
+
+2. **Enable Firebase Services**:
+    In the Firebase console for your new project, navigate to the "Build" section in the left-hand menu and enable the following services:
+    - **Authentication**: Go to the "Authentication" section, click "Get started", and enable the **Google** sign-in provider.
+    - **Firestore Database**: Go to the "Firestore Database" section, click "Create database", and start in **production mode**. Choose a location close to your users.
+    - **Hosting**: Go to the "Hosting" section and click "Get started".
+
+3. **Enable Google Cloud Services for AI Features**:
+    This project uses Firebase Cloud Functions and Vertex AI for the suggestion feature.
+    - **Upgrade Your Project**: In the Firebase console, click the gear icon next to "Project Overview" and go to "Usage and billing". Select the **Blaze (Pay-as-you-go)** plan. This is required to use Cloud Functions and Vertex AI.
+    - **Enable APIs**:
+        - Visit the [Google Cloud Console API Library](https://console.cloud.google.com/apis/library) for your project.
+        - Search for and enable the **Vertex AI API**.
+        - The Cloud Functions API and others will be enabled automatically during deployment.
+
+4. **Register Your Web App**:
+    - In the Firebase console, go to "Project Settings" (gear icon).
+    - Under the "General" tab, scroll down to "Your apps".
+    - Click the web icon (`</>`) to register a new web app.
+    - Give it a nickname (e.g., "Momentum Web") and click "Register app".
+    - Firebase will provide you with a configuration object. You will use these values in the next step.
+
 ### Installation
 
 1. Clone the repository
