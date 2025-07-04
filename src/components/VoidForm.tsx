@@ -17,8 +17,8 @@ import {
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { styled } from '@mui/material/styles';
 import type { Theme } from '@mui/material/styles';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../firebase';
+import { getGenerativeModel, Schema } from 'firebase/ai';
+import { ai } from '../firebase';
 import type { VoidFormData, NewNextAction } from '../types/void';
 
 const FormContainer = styled(Box)(({ theme }) => ({
@@ -77,34 +77,50 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
     setActiveStep((prev) => prev - 1);
   };
 
-  const handleSuggestAction = async () => {
-    if (!formData.title || !functions) {
-      console.error("Functions not available or no title provided.");
+    const handleSuggestAction = async () => {
+    if (!formData.title) {
+      console.error("No title provided for suggestions.");
       return;
     }
     setIsSuggesting(true);
     setSuggestions([]);
 
-    const prompt = `
-      You are a coach that is skilled in helping people overcome procrastination.
-      A user is feeling stuck on a task. Help them identify a small, concrete, physical next step.
-
-      Task Title: "${formData.title}"
-      Additional Context: ${formData.description || "None"}
-
-      Based on this, suggest three distinct, small, physical next actions a person could
-      take that would help them make progress on the task and would take no longer than 10 minutes.
-
-      Return the suggestions as a JSON array of strings, like this: ["suggestion 1", "suggestion 2", "suggestion 3"]
-      The suggestions should be concise and start with an action verb.
-      Do not include any other text, just the JSON array.
-    `;
-
-    const getSuggestions = httpsCallable<{ prompt: string }, { suggestions: string[] }>(functions, 'getAiSuggestions');
-
     try {
-      const result = await getSuggestions({ prompt });
-      setSuggestions(result.data.suggestions || []);
+      const jsonSchema = Schema.object({
+        properties: {
+          suggestions: Schema.array({
+            items: Schema.string(),
+            description: "Three distinct, small, physical next actions a person could take."
+          }),
+        },
+        required: ['suggestions'],
+      });
+
+      const model = getGenerativeModel(ai, {
+        model: 'gemini-1.5-flash',
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: jsonSchema,
+        },
+      });
+
+      const prompt = `
+        You are a coach that is skilled in helping people overcome procrastination.
+        A user is feeling stuck on a task. Help them identify a small, concrete, physical next step.
+
+        Task Title: "${formData.title}"
+        Additional Context: ${formData.description || "None"}
+
+        Based on this, suggest three distinct, small, physical next actions a person could
+        take that would help them make progress on the task and would take no longer than 10 minutes.
+        The suggestions should be concise and start with an action verb.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const responseText = result.response.text();
+      const parsed = JSON.parse(responseText);
+
+      setSuggestions(parsed.suggestions || []);
     } catch (error) {
       console.error("Error fetching AI suggestions:", error);
       setSuggestions(['Could not get suggestions. Please try again.']);
@@ -204,7 +220,7 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
               <Button 
                 onClick={handleSuggestAction} 
                 startIcon={isSuggesting ? <CircularProgress size={20} /> : <AutoAwesomeIcon />}
-                disabled={isSuggesting || !formData.title || !functions}
+                disabled={isSuggesting || !formData.title}
                 variant="outlined"
               >
                 Suggest an Action

@@ -4,6 +4,7 @@ import { getAnalytics, type Analytics } from 'firebase/analytics';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, type Firestore } from 'firebase/firestore';
 import { getPerformance, type FirebasePerformance } from 'firebase/performance';
 import { getFunctions, type Functions } from 'firebase/functions';
+import { getAI, VertexAIBackend } from 'firebase/ai';
 
 // Your web app's Firebase configuration
 const firebaseConfig: FirebaseOptions = {
@@ -32,6 +33,7 @@ const db: Firestore = initializeFirestore(app, {
 const analytics: Analytics | undefined = import.meta.env.PROD ? getAnalytics(app) : undefined;
 const functions: Functions = getFunctions(app);
 const performance: FirebasePerformance | undefined = import.meta.env.PROD ? getPerformance(app) : undefined;
+const ai = getAI(app, { backend: new VertexAIBackend() });
 
 export {
   app,
@@ -40,4 +42,5 @@ export {
   analytics,
   functions,
   performance,
+  ai,
 };
