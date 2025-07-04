@@ -1,7 +1,7 @@
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getAnalytics, type Analytics } from 'firebase/analytics';
-import { getFirestore, enableIndexedDbPersistence, type Firestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, type Firestore } from 'firebase/firestore';
 import { getPerformance, type FirebasePerformance } from 'firebase/performance';
 import { getFunctions, type Functions } from 'firebase/functions';
 
@@ -26,19 +26,12 @@ for (const [key, value] of Object.entries(firebaseConfig)) {
 // Initialize Firebase Services
 const app: FirebaseApp = initializeApp(firebaseConfig);
 const auth: Auth = getAuth(app);
-const db: Firestore = getFirestore(app);
+const db: Firestore = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});
 const analytics: Analytics | undefined = import.meta.env.PROD ? getAnalytics(app) : undefined;
 const functions: Functions = getFunctions(app);
 const performance: FirebasePerformance | undefined = import.meta.env.PROD ? getPerformance(app) : undefined;
-
-// Enable offline persistence for Firestore
-enableIndexedDbPersistence(db).catch((error) => {
-  if (error.code === 'failed-precondition') {
-    console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-  } else if (error.code === 'unimplemented') {
-    console.warn('The current browser does not support all features for persistence.');
-  }
-});
 
 export {
   app,

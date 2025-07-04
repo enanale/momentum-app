@@ -85,17 +85,28 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
     setIsSuggesting(true);
     setSuggestions([]);
 
-    const getSuggestions = httpsCallable<{ title: string; description?: string }, { suggestions: string[] }>(functions, 'getAiSuggestions');
+    const prompt = `
+      You are a coach that is skilled in helping people overcome procrastination.
+      A user is feeling stuck on a task. Help them identify a small, concrete, physical next step.
+
+      Task Title: "${formData.title}"
+      Additional Context: ${formData.description || "None"}
+
+      Based on this, suggest three distinct, small, physical next actions a person could
+      take that would help them make progress on the task and would take no longer than 10 minutes.
+
+      Return the suggestions as a JSON array of strings, like this: ["suggestion 1", "suggestion 2", "suggestion 3"]
+      The suggestions should be concise and start with an action verb.
+      Do not include any other text, just the JSON array.
+    `;
+
+    const getSuggestions = httpsCallable<{ prompt: string }, { suggestions: string[] }>(functions, 'getAiSuggestions');
 
     try {
-      const result = await getSuggestions({ 
-        title: formData.title, 
-        description: formData.description 
-      });
+      const result = await getSuggestions({ prompt });
       setSuggestions(result.data.suggestions || []);
     } catch (error) {
       console.error("Error fetching AI suggestions:", error);
-      // Optionally, set an error state to show a message to the user
       setSuggestions(['Could not get suggestions. Please try again.']);
     } finally {
       setIsSuggesting(false);

@@ -89,15 +89,37 @@ export const createVoidEntry = async (userId: string, formData: VoidFormData): P
 export const getTodaysNextActions = async (userId: string): Promise<NextAction[]> => {
   if (!userId) throw new VoidServiceError('User ID is required');
 
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
   const nextActionsRef = collection(db, NEXT_ACTIONS_COLLECTION);
   const q = query(
     nextActionsRef,
     where('userId', '==', userId),
-    where('completed', '==', false)
+    where('createdAt', '>=', startOfToday),
+    where('createdAt', '<=', endOfToday)
   );
 
   const snapshot = await withRetry(() => getDocs(q));
-  return snapshot.docs.map(doc => parseNextAction(doc));
+  const actions = snapshot.docs.map(doc => parseNextAction(doc));
+  
+  // Sort by creation date, then by completion status
+  return actions.sort((a, b) => {
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+    if (a.createdAt && b.createdAt) {
+      // Timestamps can be null if just created and not yet set by server
+      // This simple check might not be enough for complex cases
+      const aTime = a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+      const bTime = b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+      return aTime - bTime;
+    }
+    return 0;
+  });
 };
 
 export const completeNextAction = async (actionId: string): Promise<void> => {
@@ -108,6 +130,22 @@ export const completeNextAction = async (actionId: string): Promise<void> => {
     completed: true,
     completedAt: serverTimestamp()
   }));
+};
+
+export const createNextAction = async (userId: string, description: string): Promise<string> => {
+  if (!userId) throw new VoidServiceError('User ID is required');
+  if (!description) throw new VoidServiceError('Description is required');
+
+  const nextAction = {
+    description,
+    estimatedMinutes: 10, // Default estimated time
+    userId,
+    createdAt: serverTimestamp(),
+    completed: false,
+  };
+
+  const docRef = await withRetry(() => addDoc(collection(db, NEXT_ACTIONS_COLLECTION), nextAction));
+  return docRef.id;
 };
 
 export const uncompleteNextAction = async (actionId: string): Promise<void> => {

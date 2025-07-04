@@ -20,33 +20,20 @@ const generativeModel = vertexAi.getGenerativeModel({
 });
 
 interface RequestData {
-  title: string;
-  description?: string;
+  prompt: string;
 }
 
 export const getAiSuggestions = onCall<RequestData>(async (request) => {
-  logger.info("getAiSuggestions called", {data: request.data});
+  logger.info("getAiSuggestions called with new prompt", {data: request.data});
 
-  const {title, description} = request.data;
+  const {prompt} = request.data;
 
-  if (!title) {
+  if (!prompt) {
     throw new HttpsError(
       "invalid-argument",
-      'The function must be called with a "title" argument.',
+      'The function must be called with a "prompt" argument.',
     );
   }
-
-  const prompt = `
-    A user is feeling stuck on a task. Help them break it down into a tiny, concrete, physical first step.
-
-    Task Title: "${title}"
-    Additional Context: ${description || "None"}
-
-    Based on this, suggest exactly three distinct, small, physical next actions a person could take in the next 5-15 minutes.
-    Return the suggestions as a JSON array of strings, like this: ["suggestion 1", "suggestion 2", "suggestion 3"]
-    The suggestions should be concise and start with an action verb.
-    Do not include any other text, just the JSON array.
-  `;
 
   try {
     const resp = await generativeModel.generateContent(prompt);
