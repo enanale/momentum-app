@@ -21,6 +21,7 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
 - 🔐 Google Authentication integration
 - 📱 Full-screen layout with fixed navigation
 - 🎯 Personalized greeting based on user login state
+- ✨ AI-powered suggestions for next actions (using Google's Gemini model)
 - 💅 CSS Modules for component-scoped styling
 - 🚀 Fast development with Vite
 - 🔥 Seamless Firebase integration
@@ -39,6 +40,8 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
   - Firestore Database
   - Hosting
   - Analytics
+  - Cloud Functions for serverless logic
+  - Vertex AI for machine learning models
 - **Development Tools**:
   - TypeScript for type safety
   - Environment variables for configuration
@@ -105,12 +108,21 @@ Visit the live application at: [https://momentum-app-65c5d.web.app](https://mome
 
 ```text
 momentum/
+├── functions/              # Firebase Cloud Functions
+│   └── src/
+│       └── index.ts        # Main Cloud Function logic
 ├── src/
+│   ├── components/
+│   │   ├── DailyOperatingDoc.tsx
+│   │   ├── FocusTimer.tsx
+│   │   ├── StuckButton.tsx
+│   │   └── VoidForm.tsx
 │   ├── hooks/
 │   │   └── useAuth.ts       # Firebase authentication hook
-│   ├── styles/
-│   │   ├── App.module.css   # Component styles
-│   │   └── *.d.ts          # TypeScript declarations
+│   ├── services/
+│   │   └── voidService.ts   # Firestore interaction logic
+│   ├── types/
+│   │   └── void.ts          # Data type definitions
 │   ├── App.tsx             # Main application component
 │   ├── main.tsx            # Application entry point
 │   └── firebase.ts         # Firebase configuration
