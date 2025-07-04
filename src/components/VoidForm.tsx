@@ -97,7 +97,7 @@ export const VoidForm = ({ open, onClose, onSubmit }: VoidFormProps) => {
       });
 
       const model = getGenerativeModel(ai, {
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash-001',
         generationConfig: {
           responseMimeType: 'application/json',
           responseSchema: jsonSchema,
