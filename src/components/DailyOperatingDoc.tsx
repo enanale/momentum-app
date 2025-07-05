@@ -201,12 +201,20 @@ export const DailyOperatingDoc = ({ userId, refreshTrigger = 0, onTimerStateChan
                   </StyledListItemIcon>
                   <StyledListItemText
                     primary={action.description}
+                    secondary={action.voidDescription ? `From: "${action.voidDescription}"` : undefined}
                     sx={{
-                      textDecoration: action.completed ? 'line-through' : 'none',
-                      color: action.completed ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.9)',
-                      '& .MuiTypography-root': {
+                      '& .MuiListItemText-primary': {
+                        textDecoration: action.completed ? 'line-through' : 'none',
+                        color: action.completed ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.9)',
                         fontWeight: 400,
                         letterSpacing: '-0.011em',
+                      },
+                      '& .MuiListItemText-secondary': {
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '0.8rem',
+                        fontStyle: 'italic',
+                        marginTop: '4px',
+                        display: 'block',
                       },
                     }}
                   />

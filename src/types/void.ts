@@ -28,7 +28,11 @@ export interface NextAction {
   completed: boolean;
   createdAt: Timestamp;
   completedAt?: Timestamp | FieldValue;
-  voidId: string;
+  voidId?: string;
+  /**
+   * The description of the original Void that this action addresses.
+   */
+  voidDescription?: string;
   userId: string;
 }
 
