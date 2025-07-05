@@ -5,6 +5,7 @@ import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager
 import { getPerformance, type FirebasePerformance } from 'firebase/performance';
 import { getFunctions, type Functions } from 'firebase/functions';
 import { getAI, VertexAIBackend } from 'firebase/ai';
+import { initializeAppCheck, ReCaptchaV3Provider, type AppCheck } from 'firebase/app-check';
 
 // Your web app's Firebase configuration
 const firebaseConfig: FirebaseOptions = {
@@ -26,6 +27,23 @@ for (const [key, value] of Object.entries(firebaseConfig)) {
 
 // Initialize Firebase Services
 const app: FirebaseApp = initializeApp(firebaseConfig);
+
+// Initialize App Check
+if (import.meta.env.DEV) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
+const appCheck: AppCheck | undefined = import.meta.env.VITE_RECAPTCHA_SITE_KEY
+  ? initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(import.meta.env.VITE_RECAPTCHA_SITE_KEY),
+    isTokenAutoRefreshEnabled: true,
+  })
+  : undefined;
+
+if (!appCheck) {
+  console.error('Firebase App Check not initialized. Missing VITE_RECAPTCHA_SITE_KEY.');
+}
 const auth: Auth = getAuth(app);
 const db: Firestore = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
@@ -43,4 +61,5 @@ export {
   functions,
   performance,
   ai,
+  appCheck,
 };
