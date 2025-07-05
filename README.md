@@ -1,9 +1,9 @@
 # Momentum App
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Firebase Hosting](https://img.shields.io/badge/deploy-Firebase-orange)](https://momentum-app-65c5d.web.app)
+[![Firebase Hosting](https://img.shields.io/badge/deploy-Firebase-orange)](https://momentum.curiolabs.org)
 
-A modern web application built with React, TypeScript, and Firebase, featuring a clean Material-UI interface with Google authentication and a responsive, calming design.
+A modern web application built with React, TypeScript, and Firebase, designed to help users overcome procrastination and build momentum on their tasks.
 
 ## Screenshots
 
@@ -22,7 +22,8 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
 - 📱 Full-screen layout with fixed navigation
 - 🎯 Personalized greeting based on user login state
 - ✨ AI-powered suggestions for next actions (using Google's Gemini model)
-- 💅 CSS Modules for component-scoped styling
+- 📝 Displays contextual information for tasks originating from the "Void"
+- ⏱️ Integrated Focus Timer to encourage deep work
 - 🚀 Fast development with Vite
 - 🔥 Seamless Firebase integration
 
@@ -34,7 +35,7 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
   - Custom theme with gradient styles
   - Responsive AppBar
   - Material Icons
-- **Styling**: CSS Modules with TypeScript support
+- **State Management**: React Hooks (useState, useEffect, useContext) and custom hooks for modular logic.
 - **Backend Services**: Firebase
   - Authentication (Google Sign-in)
   - Firestore Database
@@ -44,6 +45,7 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
   - Vertex AI for machine learning models
 - **Development Tools**:
   - TypeScript for type safety
+  - NVM for Node.js version management
   - Environment variables for configuration
   - Hot Module Replacement (HMR)
 
@@ -51,9 +53,9 @@ A modern web application built with React, TypeScript, and Firebase, featuring a
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm (v8 or higher)
-- Firebase CLI (`npm install -g firebase-tools`)
+- **Node.js**: `v22.17.0` or higher is recommended. This project uses a `.nvmrc` file, so if you have [nvm](https://github.com/nvm-sh/nvm) installed, you can simply run `nvm use` in the project root.
+- **npm**: `v10` or higher
+- **Firebase CLI**: `v14.9.0` or higher (`npm install -g firebase-tools`)
 
 ### Firebase Project Setup
 
@@ -86,14 +88,26 @@ Before you can run the application, you need to set up a Firebase project.
 
 ### Installation
 
-1. Clone the repository
-2. Install dependencies:
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/enanale/momentum-app.git
+   cd momentum-app
+   ```
+
+2. Set the correct Node.js version:
+
+   ```bash
+   nvm use
+   ```
+
+3. Install dependencies:
 
    ```bash
    npm install
    ```
 
-3. Create a `.env` file in the root directory with your Firebase configuration:
+4. Create a `.env` file in the root directory with your Firebase configuration:
 
    ```env
    VITE_FIREBASE_API_KEY=your_api_key
@@ -131,7 +145,7 @@ firebase deploy --only hosting
 
 ## Live Demo
 
-Visit the live application at: [https://momentum-app-65c5d.web.app](https://momentum-app-65c5d.web.app)
+Visit the live application at: [https://momentum.curiolabs.org](https://momentum.curiolabs.org)
 
 ## Project Structure
 
@@ -143,11 +157,13 @@ momentum/
 ├── src/
 │   ├── components/
 │   │   ├── DailyOperatingDoc.tsx
+│   │   ├── NextActionItem.tsx # Renders a single action item
 │   │   ├── FocusTimer.tsx
 │   │   ├── StuckButton.tsx
 │   │   └── VoidForm.tsx
 │   ├── hooks/
-│   │   └── useAuth.ts       # Firebase authentication hook
+│   │   ├── useAuth.ts       # Firebase authentication hook
+│   │   └── useNextActions.ts# Logic for fetching and managing actions
 │   ├── services/
 │   │   └── voidService.ts   # Firestore interaction logic
 │   ├── types/
@@ -157,16 +173,17 @@ momentum/
 │   └── firebase.ts         # Firebase configuration
 ├── public/                 # Static assets
 ├── .env                    # Environment variables
+├── .nvmrc                  # Specifies the Node.js version
 └── firebase.json          # Firebase configuration
 ```
 
 ## Styling
 
-The application uses a combination of Material-UI's theming system and CSS Modules:
+The application uses Material-UI's theming system:
 
 - Custom gradients for visual appeal
 - Responsive layout with proper spacing
-- Component-scoped styles using CSS Modules
+- Component-scoped styles using MUI's `styled` API
 - TypeScript integration for style safety
 
 ## Authentication
